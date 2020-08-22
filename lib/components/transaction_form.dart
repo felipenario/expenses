@@ -1,7 +1,10 @@
+import 'package:expenses/components/adaptative_date_picker.dart';
+import 'package:expenses/components/adaptative_textfield.dart';
+import 'package:expenses/components/adaptive_button.dart';
 import 'package:flutter/material.dart';
 
 class TransactionForm extends StatefulWidget {
-  final void Function(String, double) onSubmit;
+  final void Function(String, double, DateTime) onSubmit;
 
   TransactionForm(this.onSubmit);
 
@@ -10,53 +13,62 @@ class TransactionForm extends StatefulWidget {
 }
 
 class _TransactionFormState extends State<TransactionForm> {
-  final titleController = TextEditingController();
+  final _titleController = TextEditingController();
 
-  final valueController = TextEditingController();
+  final _valueController = TextEditingController();
+
+  DateTime _selectedDate = DateTime.now();
 
   _submitForm() {
-    final title = titleController.text;
-    final value = double.tryParse(valueController.text) ?? 0.0;
-    if (title.isEmpty || value <= 0) {
+    final title = _titleController.text;
+    final value = double.tryParse(_valueController.text) ?? 0.0;
+    if (title.isEmpty || value <= 0 || _selectedDate == null) {
       return;
     }
-    widget.onSubmit(title, value);
+    widget.onSubmit(title, value, _selectedDate);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            TextField(
-              controller: titleController,
-              onSubmitted: (_) => _submitForm,
-              decoration: InputDecoration(
-                labelText: 'Título',
+    return SingleChildScrollView(
+      child: Card(
+        elevation: 5,
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: 10,
+            right: 10,
+            left: 10,
+            bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            children: [
+              AdaptativeTextField(
+                controller: _titleController,
+                onSubmitted: (_) => _submitForm(),
+                label: 'Título',
               ),
-            ),
-            TextField(
-              controller: valueController,
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              onSubmitted: (_) => _submitForm,
-              decoration: InputDecoration(
-                labelText: 'Valor (R\$)',
+              AdaptativeTextField(
+                controller: _valueController,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                onSubmitted: (_) => _submitForm(),
+                label: 'Valor (R\$)',
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                FlatButton(
-                  child: Text("Nova Transação"),
-                  textColor: Colors.purple,
-                  onPressed: _submitForm,
-                ),
-              ],
-            )
-          ],
+              AdaptativeDatePicker(_selectedDate, (newDate) {
+                setState(() {
+                  _selectedDate = newDate;
+                });
+              }),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  AdaptativeButton(
+                    label: "Nova Transação",
+                    onPressed: _submitForm,
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
