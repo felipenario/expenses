@@ -1,6 +1,6 @@
 # expenses
 
-App sobre despesas pessoais feito como forma de atividade em um curso de Flutter.
+App sobre despesas pessoais feito como forma de atividade em um curso de Flutter. App completamente responsivo e com Widgets adaptivos para Android e iOS.
 
 ## ScreenShots
 
